@@ -131,22 +131,33 @@
 <body x-data="appData()">
 
     <!-- Wrap floating elements inside a container or make them relative to body if body is relative to document -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-50]">
         <div class="floating bg-blue-400 w-64 h-64 top-10 left-10"></div>
         <div class="floating bg-red-300 w-80 h-80 bottom-20 right-10" style="animation-delay: -5s;"></div>
     </div>
 
 
     <header class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
-        <nav class="glass px-6 py-4 flex justify-between items-center shadow-lg bg-white/40">
-            <div class="flex items-center gap-2">
-                <div class="bg-red-500 text-white p-2 rounded-lg shadow-inner">
-                    <i class="fas fa-plus-medical"></i>
+        <nav class="glass px-4 md:px-6 py-2.5 md:py-3 flex justify-between items-center shadow-lg bg-white/40 relative">
+            <!-- Left: Logo & Title -->
+            <div class="flex items-center gap-3 shrink-0 z-10">
+                <div
+                    class="bg-blue-600 text-white w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-xl shadow-md shrink-0">
+                    <i class="fas fa-hand-holding-medical text-lg md:text-xl"></i>
                 </div>
-                <span class="font-bold text-slate-800 text-xl tracking-tight hidden sm:block">Sơ Cấp Cứu.VN</span>
-                <span class="font-bold text-slate-800 text-xl tracking-tight sm:hidden">SCC VN</span>
+                <div class="flex flex-col justify-center">
+                    <div class="font-bold text-slate-800 text-[17px] md:text-xl leading-none flex items-baseline gap-1">
+                        Sơ Cấp Cứu <span class="text-blue-600">VN</span>
+                    </div>
+                    <div
+                        class="text-[9px] md:text-[10px] font-extrabold text-blue-500 tracking-widest mt-1 uppercase leading-none">
+                        NHÓM SINH VIÊN FPT
+                    </div>
+                </div>
             </div>
-            <div class="hidden md:flex gap-8 font-medium text-slate-700">
+
+            <!-- Middle: Links (Centered on Desktop) -->
+            <div class="hidden lg:flex gap-8 font-medium text-slate-700 absolute left-1/2 -translate-x-1/2">
                 <a href="#hero" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Tìm
                     kiếm</a>
                 <a href="#bodymap" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Cơ
@@ -154,243 +165,267 @@
                 <a href="#minigame" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Giải
                     đố</a>
             </div>
-            <div class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full whitespace-nowrap">
-                FPTU Project
-            </div>
+
+            <!-- Right: Emergency Button -->
+            <a href="tel:115"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold text-sm md:text-[15px] px-4 py-2 md:px-6 md:py-2 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all shrink-0 z-10">
+                Khẩn cấp 115
+            </a>
         </nav>
     </header>
 
-    <main class="pt-32 pb-20 px-4 max-w-6xl mx-auto w-full">
+    <main class="w-full">
 
-        <section id="hero" class="text-center py-12 md:py-20">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-6 drop-shadow-sm">
-                Bình tĩnh. Hành động. <span class="text-red-500 drop-shadow-md">Cứu người.</span>
-            </h1>
-
-            <div class="max-w-2xl mx-auto relative group mt-10">
-                <div
-                    class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-red-400 rounded-[30px] blur opacity-30 group-hover:opacity-60 transition duration-1000">
-                </div>
-                <div class="relative">
-                    <input type="text" x-model="searchQuery" @input="filterResults" :placeholder="typewriterText"
-                        class="w-full glass bg-white/70 py-5 px-14 text-lg text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-400/50 shadow-xl transition-all font-medium">
-                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-
-                    <button x-show="searchQuery.length > 0" @click="clearSearch()"
-                        class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 focus:outline-none">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-
-                <div x-show="searchQuery.length > 0" x-transition.opacity x-transition:enter.duration.300ms
-                    x-transition:leave.duration.200ms x-cloak
-                    class="absolute top-full left-0 w-full mt-4 glass bg-white/95 overflow-hidden z-40 shadow-2xl rounded-2xl border border-blue-100 max-h-80 overflow-y-auto hidden-scrollbar">
-                    <div class="py-2">
-                        <template x-for="item in filteredData" :key="item.id">
-                            <div @click="openModal(item)"
-                                class="px-6 py-4 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-0 flex justify-between items-center group transition-colors">
-                                <span class="font-semibold text-slate-700 group-hover:text-blue-700 transition-colors"
-                                    x-text="item.title"></span>
-                                <div
-                                    class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <i class="fas fa-arrow-right text-sm"></i>
-                                </div>
-                            </div>
-                        </template>
-                        <div x-show="filteredData.length === 0"
-                            class="p-6 text-slate-500 italic flex flex-col items-center justify-center gap-3">
-                            <i class="fas fa-search-minus text-3xl text-slate-300"></i>
-                            Không tìm thấy kết quả phù hợp. Hãy gọi 115!
-                        </div>
-                    </div>
-                </div>
+        <section id="hero" class="relative overflow-hidden pt-36 pb-20 md:py-32 w-full">
+            <!-- Background Image -->
+            <div class="absolute inset-0 z-[-40]">
+                <!-- Removed opacity constraint and added object-cover for full width -->
+                <img src="bioa.png" alt="Background" class="w-full h-full object-cover object-top opacity-60">
             </div>
 
-            <div class="mt-10 flex flex-wrap justify-center gap-3">
-                <span class="text-sm font-medium text-slate-500 w-full mb-2">Gợi ý tìm kiếm nhanh:</span>
-                <button @click="quickSearch('cpr')"
-                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🫀
-                    CPR</button>
-                <button @click="quickSearch('bỏng')"
-                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🔥
-                    Bỏng</button>
-                <button @click="quickSearch('đột quỵ')"
-                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🧠
-                    Đột quỵ</button>
-                <button @click="quickSearch('đuối nước')"
-                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🌊
-                    Đuối nước</button>
-            </div>
-        </section>
+            <!-- Inner content wrapper restricted to max width -->
+            <div class="px-4 max-w-6xl mx-auto w-full relative z-10">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-6 drop-shadow-sm text-center">
+                    Bình tĩnh. Hành động. <span class="text-red-500 drop-shadow-md">Cứu người.</span>
+                </h1>
 
-        <section id="bodymap" class="py-16 scroll-mt-24">
-            <div class="text-center mb-12">
-                <span
-                    class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-blue-200">Tra
-                    cứu trực quan</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Bản đồ cơ thể</h2>
-                <p class="text-slate-600 max-w-xl mx-auto">Chọn một vùng trên mô hình để xem các tình huống sơ cấp cứu
-                    thường gặp nhất ở vị trí đó.</p>
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto">
-                <!-- Body Map SVG Container -->
-                <div class="glass bg-white/30 p-8 flex justify-center items-center shadow-lg relative min-h-[400px]">
-                    <svg viewBox="0 0 200 500"
-                        class="w-48 sm:w-64 h-auto drop-shadow-xl z-10 transition-transform duration-300 hover:scale-105">
-                        <!-- Head -->
-                        <circle cx="100" cy="50" r="40" class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'đầu' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('đầu')" />
-                        <!-- Chest/Torso -->
-                        <path d="M70,100 L130,100 L140,250 L60,250 Z"
-                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'ngực' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('ngực')" />
-                        <!-- Left Arm -->
-                        <path d="M40,110 L65,110 L55,250 L30,250 Z"
-                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('tay')" />
-                        <!-- Right Arm -->
-                        <path d="M135,110 L160,110 L170,250 L145,250 Z"
-                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('tay')" />
-                        <!-- Left Leg -->
-                        <path d="M65,260 L95,260 L90,480 L60,480 Z"
-                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('chân')" />
-                        <!-- Right Leg -->
-                        <path d="M105,260 L135,260 L140,480 L110,480 Z"
-                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
-                            :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
-                            @click="selectPart('chân')" />
-                    </svg>
-
-                    <!-- Helper Text overlay -->
-                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20"
-                        x-show="!activePart">
-                        <i class="fas fa-hand-pointer text-6xl text-slate-800 animate-pulse"></i>
+                <div class="max-w-2xl mx-auto relative group mt-10">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-red-400 rounded-[30px] blur opacity-30 group-hover:opacity-60 transition duration-1000">
                     </div>
-                </div>
+                    <div class="relative">
+                        <input type="text" x-model="searchQuery" @input="filterResults" :placeholder="typewriterText"
+                            class="w-full glass bg-white/70 py-5 px-14 text-lg text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-400/50 shadow-xl transition-all font-medium">
+                        <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 
-                <!-- Results Container -->
-                <div class="glass bg-white/60 p-6 md:p-8 shadow-lg flex flex-col h-full">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200/50 block">
-                        <div
-                            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                            <i class="fas fa-list-ul"></i>
-                        </div>
-                        <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight"
-                            x-text="activePart ? 'Sơ cứu vùng: ' + activePart.toUpperCase() : 'Chọn vùng tổn thương'">
-                        </h3>
+                        <button x-show="searchQuery.length > 0" @click="clearSearch()"
+                            class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 focus:outline-none">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
 
-                    <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
-                        <div x-show="!activePart"
-                            class="h-full flex flex-col items-center justify-center text-slate-500 opacity-70 space-y-4 py-10">
-                            <i class="fas fa-child text-5xl"></i>
-                            <p class="text-center text-sm">Vui lòng nhấp vào các phần trên mô hình cơ thể<br>để xem
-                                hướng dẫn tương ứng.</p>
-                        </div>
-
-                        <div x-show="activePart" class="space-y-3" x-transition.opacity>
-                            <template x-for="item in partLessons" :key="item.id">
-                                <button @click="openModal(item)"
-                                    class="w-full text-left p-4 rounded-xl bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border border-slate-100 flex items-center justify-between group">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-                                            <i class="fas fa-briefcase-medical"></i>
-                                        </div>
+                    <div class="relative w-full">
+                        <div x-show="searchQuery.length > 0" x-transition.opacity x-transition:enter.duration.300ms
+                            x-transition:leave.duration.200ms x-cloak
+                            class="absolute top-full left-0 right-0 mt-4 glass bg-white/95 overflow-hidden z-50 shadow-2xl rounded-2xl border border-blue-100 max-h-80 overflow-y-auto hidden-scrollbar">
+                            <div class="py-2">
+                                <template x-for="item in filteredData" :key="item.id">
+                                    <div @click="openModal(item)"
+                                        class="px-6 py-4 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-0 flex justify-between items-center group transition-colors">
                                         <span
-                                            class="font-bold text-slate-700 group-hover:text-blue-600 transition-colors"
+                                            class="font-semibold text-slate-700 group-hover:text-blue-700 transition-colors"
                                             x-text="item.title"></span>
+                                        <div
+                                            class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <i class="fas fa-arrow-right text-sm"></i>
+                                        </div>
                                     </div>
-                                    <i
-                                        class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition-colors"></i>
-                                </button>
-                            </template>
-                            <div x-show="partLessons.length === 0"
-                                class="p-4 text-center text-slate-500 italic bg-white/50 rounded-xl border border-dashed border-slate-300">
-                                Chưa có dữ liệu riêng cho vùng này.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="minigame" class="py-16 scroll-mt-24 mb-10">
-            <div class="text-center mb-12">
-                <span
-                    class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-red-200"><i
-                        class="fas fa-gamepad mr-2"></i>Mini Game</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Sự thật hay Lầm tưởng?</h2>
-                <p class="text-slate-600 max-w-xl mx-auto">Kiểm tra kiến thức dân gian của bạn. Có những mẹo vặt thực
-                    chất lại gây hại nhiều hơn lợi!</p>
-            </div>
-
-            <div class="max-w-lg mx-auto">
-                <div class="flip-card drop-shadow-2xl" :class="isFlipped ? 'flipped' : ''" @click="isFlipped = true">
-                    <div class="flip-card-inner">
-                        <!-- FRONT OF CARD -->
-                        <div
-                            class="flip-card-front glass bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl border-2 border-blue-400/30 group">
-
-                            <div
-                                class="absolute top-4 right-4 text-blue-300 opacity-50 text-4xl group-hover:scale-110 transition-transform">
-                                <i class="far fa-question-circle"></i>
-                            </div>
-
-                            <span
-                                class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-6 bg-blue-900/40 px-3 py-1 rounded-full">Câu
-                                hỏi #<span x-text="currentMythIndex + 1"></span></span>
-
-                            <p class="text-2xl md:text-3xl font-extrabold leading-snug px-4 group-hover:text-blue-50 transition-colors"
-                                x-text="currentMyth.question"></p>
-
-                            <div
-                                class="absolute bottom-6 flex items-center gap-2 text-sm font-medium bg-white/20 px-4 py-2 rounded-full backdrop-blur-md animate-pulse">
-                                <i class="fas fa-hand-pointer"></i> Chạm để lật bài
-                            </div>
-                        </div>
-
-                        <!-- BACK OF CARD -->
-                        <div class="flip-card-back glass bg-white shadow-xl border-t-8 border-t-indigo-500"
-                            :class="currentMyth.isFact ? 'border-t-green-500' : 'border-t-red-500'">
-
-                            <div class="flex-grow flex flex-col justify-center items-center px-4">
-                                <div :class="currentMyth.isFact ? 'text-green-500 bg-green-50' : 'text-red-500 bg-red-50'"
-                                    class="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner">
-                                    <i :class="currentMyth.isFact ? 'fas fa-check' : 'fas fa-times'"></i>
+                                </template>
+                                <div x-show="filteredData.length === 0"
+                                    class="p-6 text-slate-500 italic flex flex-col items-center justify-center gap-3">
+                                    <i class="fas fa-search-minus text-3xl text-slate-300"></i>
+                                    Không tìm thấy kết quả phù hợp. Hãy gọi 115!
                                 </div>
-                                <h4 class="text-2xl font-black uppercase tracking-wider mb-2"
-                                    :class="currentMyth.isFact ? 'text-green-600' : 'text-red-600'"
-                                    x-text="currentMyth.isFact ? 'SỰ THẬT' : 'LẦM TƯỞNG'"></h4>
-                                <p class="text-slate-600 text-[15px] font-medium leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100"
-                                    x-text="currentMyth.explanation"></p>
                             </div>
-
-                            <button @click.stop="nextMyth()"
-                                class="w-full mt-4 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-                                Câu Tiếp Theo <i class="fas fa-arrow-right"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Progress dots -->
-                <div class="flex justify-center gap-2 mt-6">
-                    <template x-for="(myth, index) in mythData" :key="index">
-                        <div class="w-2 h-2 rounded-full transition-all duration-300"
-                            :class="currentMythIndex === index ? 'bg-blue-600 w-6' : 'bg-slate-300'"></div>
-                    </template>
+                <div class="mt-10 flex flex-wrap justify-center gap-3">
+                    <span class="text-sm font-medium text-slate-500 w-full mb-2 text-center">Gợi ý tìm kiếm
+                        nhanh:</span>
+                    <button @click="quickSearch('cpr')"
+                        class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🫀
+                        CPR</button>
+                    <button @click="quickSearch('bỏng')"
+                        class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🔥
+                        Bỏng</button>
+                    <button @click="quickSearch('đột quỵ')"
+                        class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🧠
+                        Đột quỵ</button>
+                    <button @click="quickSearch('đuối nước')"
+                        class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🌊
+                        Đuối nước</button>
                 </div>
             </div>
         </section>
+
+        <!-- Container wrapper for the rest of the content -->
+        <div class="px-4 max-w-6xl mx-auto w-full">
+
+            <section id="bodymap" class="py-16 scroll-mt-24">
+                <div class="text-center mb-12">
+                    <span
+                        class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-blue-200">Tra
+                        cứu trực quan</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Bản đồ cơ thể</h2>
+                    <p class="text-slate-600 max-w-xl mx-auto">Chọn một vùng trên mô hình để xem các tình huống sơ cấp
+                        cứu
+                        thường gặp nhất ở vị trí đó.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto">
+                    <!-- Body Map SVG Container -->
+                    <div
+                        class="glass bg-white/30 p-8 flex justify-center items-center shadow-lg relative min-h-[400px]">
+                        <svg viewBox="0 0 200 500"
+                            class="w-48 sm:w-64 h-auto drop-shadow-xl z-10 transition-transform duration-300 hover:scale-105">
+                            <!-- Head -->
+                            <circle cx="100" cy="50" r="40"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'đầu' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('đầu')" />
+                            <!-- Chest/Torso -->
+                            <path d="M70,100 L130,100 L140,250 L60,250 Z"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'ngực' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('ngực')" />
+                            <!-- Left Arm -->
+                            <path d="M40,110 L65,110 L55,250 L30,250 Z"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('tay')" />
+                            <!-- Right Arm -->
+                            <path d="M135,110 L160,110 L170,250 L145,250 Z"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('tay')" />
+                            <!-- Left Leg -->
+                            <path d="M65,260 L95,260 L90,480 L60,480 Z"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('chân')" />
+                            <!-- Right Leg -->
+                            <path d="M105,260 L135,260 L140,480 L110,480 Z"
+                                class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                                :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
+                                @click="selectPart('chân')" />
+                        </svg>
+
+                        <!-- Helper Text overlay -->
+                        <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20"
+                            x-show="!activePart">
+                            <i class="fas fa-hand-pointer text-6xl text-slate-800 animate-pulse"></i>
+                        </div>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div class="glass bg-white/60 p-6 md:p-8 shadow-lg flex flex-col h-full">
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200/50 block">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                                <i class="fas fa-list-ul"></i>
+                            </div>
+                            <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight"
+                                x-text="activePart ? 'Sơ cứu vùng: ' + activePart.toUpperCase() : 'Chọn vùng tổn thương'">
+                            </h3>
+                        </div>
+
+                        <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                            <div x-show="!activePart"
+                                class="h-full flex flex-col items-center justify-center text-slate-500 opacity-70 space-y-4 py-10">
+                                <i class="fas fa-child text-5xl"></i>
+                                <p class="text-center text-sm">Vui lòng nhấp vào các phần trên mô hình cơ thể<br>để xem
+                                    hướng dẫn tương ứng.</p>
+                            </div>
+
+                            <div x-show="activePart" class="space-y-3" x-transition.opacity>
+                                <template x-for="item in partLessons" :key="item.id">
+                                    <button @click="openModal(item)"
+                                        class="w-full text-left p-4 rounded-xl bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border border-slate-100 flex items-center justify-between group">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                                <i class="fas fa-briefcase-medical"></i>
+                                            </div>
+                                            <span
+                                                class="font-bold text-slate-700 group-hover:text-blue-600 transition-colors"
+                                                x-text="item.title"></span>
+                                        </div>
+                                        <i
+                                            class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition-colors"></i>
+                                    </button>
+                                </template>
+                                <div x-show="partLessons.length === 0"
+                                    class="p-4 text-center text-slate-500 italic bg-white/50 rounded-xl border border-dashed border-slate-300">
+                                    Chưa có dữ liệu riêng cho vùng này.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="minigame" class="py-16 scroll-mt-24 mb-10">
+                <div class="text-center mb-12">
+                    <span
+                        class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-red-200"><i
+                            class="fas fa-gamepad mr-2"></i>Mini Game</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Sự thật hay Lầm tưởng?</h2>
+                    <p class="text-slate-600 max-w-xl mx-auto">Kiểm tra kiến thức dân gian của bạn. Có những mẹo vặt
+                        thực
+                        chất lại gây hại nhiều hơn lợi!</p>
+                </div>
+
+                <div class="max-w-lg mx-auto">
+                    <div class="flip-card drop-shadow-2xl" :class="isFlipped ? 'flipped' : ''"
+                        @click="isFlipped = true">
+                        <div class="flip-card-inner">
+                            <!-- FRONT OF CARD -->
+                            <div
+                                class="flip-card-front glass bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl border-2 border-blue-400/30 group">
+
+                                <div
+                                    class="absolute top-4 right-4 text-blue-300 opacity-50 text-4xl group-hover:scale-110 transition-transform">
+                                    <i class="far fa-question-circle"></i>
+                                </div>
+
+                                <span
+                                    class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-6 bg-blue-900/40 px-3 py-1 rounded-full">Câu
+                                    hỏi #<span x-text="currentMythIndex + 1"></span></span>
+
+                                <p class="text-2xl md:text-3xl font-extrabold leading-snug px-4 group-hover:text-blue-50 transition-colors"
+                                    x-text="currentMyth.question"></p>
+
+                                <div
+                                    class="absolute bottom-6 flex items-center gap-2 text-sm font-medium bg-white/20 px-4 py-2 rounded-full backdrop-blur-md animate-pulse">
+                                    <i class="fas fa-hand-pointer"></i> Chạm để lật bài
+                                </div>
+                            </div>
+
+                            <!-- BACK OF CARD -->
+                            <div class="flip-card-back glass bg-white shadow-xl border-t-8 border-t-indigo-500"
+                                :class="currentMyth.isFact ? 'border-t-green-500' : 'border-t-red-500'">
+
+                                <div class="flex-grow flex flex-col justify-center items-center px-4">
+                                    <div :class="currentMyth.isFact ? 'text-green-500 bg-green-50' : 'text-red-500 bg-red-50'"
+                                        class="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner">
+                                        <i :class="currentMyth.isFact ? 'fas fa-check' : 'fas fa-times'"></i>
+                                    </div>
+                                    <h4 class="text-2xl font-black uppercase tracking-wider mb-2"
+                                        :class="currentMyth.isFact ? 'text-green-600' : 'text-red-600'"
+                                        x-text="currentMyth.isFact ? 'SỰ THẬT' : 'LẦM TƯỞNG'"></h4>
+                                    <p class="text-slate-600 text-[15px] font-medium leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100"
+                                        x-text="currentMyth.explanation"></p>
+                                </div>
+
+                                <button @click.stop="nextMyth()"
+                                    class="w-full mt-4 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                                    Câu Tiếp Theo <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress dots -->
+                    <div class="flex justify-center gap-2 mt-6">
+                        <template x-for="(myth, index) in mythData" :key="index">
+                            <div class="w-2 h-2 rounded-full transition-all duration-300"
+                                :class="currentMythIndex === index ? 'bg-blue-600 w-6' : 'bg-slate-300'"></div>
+                        </template>
+                    </div>
+                </div>
+            </section>
 
     </main>
 
@@ -413,10 +448,9 @@
         <button
             class="relative w-16 h-16 rounded-full bg-white shadow-2xl flex items-center justify-center hover:scale-105 transition-transform duration-300 border-[3px] border-white group-hover:border-blue-100 overflow-visible"
             @click="alert('Xin chào! Tính năng AI Chatbot Bác sĩ Sơ đang được nhóm hoàn thiện và sẽ ra mắt trong phiên bản tới nhé!')">
-            <div class="absolute inset-0 rounded-full bg-blue-100 overflow-hidden">
-                <!-- Using an actual image or reliable URL for avatar -->
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Medic&backgroundColor=b6e3f4" alt="Bác sĩ Sơ"
-                    class="w-full h-full object-cover">
+            <div class="absolute inset-0 rounded-full bg-blue-50 overflow-hidden">
+                <!-- Using the provided chatbot image -->
+                <img src="chatbot.png" alt="Bác sĩ Sơ" class="w-full h-full object-cover p-1">
             </div>
             <!-- Online status indicator -->
             <span
@@ -509,7 +543,8 @@
                         <h5 class="font-bold text-amber-800 mb-1">Cảnh báo quan trọng</h5>
                         <p class="text-sm text-amber-900/80 leading-relaxed">Thông tin thao tác chỉ mang tính chất tham
                             khảo sơ cứu khẩn cấp ban đầu. Luôn ưu tiên quan sát tình trạng sinh tồn và gọi ngay
-                            <b>115</b> khi nạn nhân có dấu hiệu nguy kịch.</p>
+                            <b>115</b> khi nạn nhân có dấu hiệu nguy kịch.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -698,8 +733,22 @@
                 quickSearch(term) {
                     this.searchQuery = term;
                     this.filterResults();
-                    // Cuộn thẳng lên khung search nhẹ nhàng
-                    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+
+                    // Thêm delay nhỏ để DOM render xong danh sách trước khi cuộn
+                    setTimeout(() => {
+                        const heroSection = document.getElementById('hero');
+                        if (heroSection) {
+                            // Tính toán vị trí cuộn có tính đến thanh header fix ở trên (khoảng 100px)
+                            const headerOffset = 100;
+                            const elementPosition = heroSection.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: "smooth"
+                            });
+                        }
+                    }, 50);
                 },
 
                 clearSearch() {
@@ -752,5 +801,3 @@
 </body>
 
 </html>
-
-
