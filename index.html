@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Cấp Cứu VN | Kỹ năng cứu sống trong tầm tay</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fecaca 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animation cho các hình khối bay lơ lửng background */
+        .floating {
+            position: absolute;
+            /* Changed from fixed */
+            z-index: -1;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.5;
+            animation: float 20s infinite alternate;
+            pointer-events: none;
+            /* Add to prevent interaction issues */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(100px, 50px);
+            }
+        }
+
+        /* Lật thẻ 3D */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 300px;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 24px;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Body Map Hover */
+        .body-part {
+            fill: #cbd5e1;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .body-part:hover,
+        .body-part.active {
+            fill: #ef4444;
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        main {
+            flex-grow: 1;
+            /* Allow main content to grow and push footer down */
+            position: relative;
+            /* Base for absolute positioning if needed inside */
+        }
+    </style>
+</head>
+
+<body x-data="appData()">
+
+    <!-- Wrap floating elements inside a container or make them relative to body if body is relative to document -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+        <div class="floating bg-blue-400 w-64 h-64 top-10 left-10"></div>
+        <div class="floating bg-red-300 w-80 h-80 bottom-20 right-10" style="animation-delay: -5s;"></div>
+    </div>
+
+
+    <header class="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
+        <nav class="glass px-6 py-4 flex justify-between items-center shadow-lg bg-white/40">
+            <div class="flex items-center gap-2">
+                <div class="bg-red-500 text-white p-2 rounded-lg shadow-inner">
+                    <i class="fas fa-plus-medical"></i>
+                </div>
+                <span class="font-bold text-slate-800 text-xl tracking-tight hidden sm:block">Sơ Cấp Cứu.VN</span>
+                <span class="font-bold text-slate-800 text-xl tracking-tight sm:hidden">SCC VN</span>
+            </div>
+            <div class="hidden md:flex gap-8 font-medium text-slate-700">
+                <a href="#hero" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Tìm
+                    kiếm</a>
+                <a href="#bodymap" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Cơ
+                    thể</a>
+                <a href="#minigame" class="hover:text-blue-600 transition focus:text-blue-600 focus:outline-none">Giải
+                    đố</a>
+            </div>
+            <div class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded-full whitespace-nowrap">
+                FPTU Project
+            </div>
+        </nav>
+    </header>
+
+    <main class="pt-32 pb-20 px-4 max-w-6xl mx-auto w-full">
+
+        <section id="hero" class="text-center py-12 md:py-20">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-6 drop-shadow-sm">
+                Bình tĩnh. Hành động. <span class="text-red-500 drop-shadow-md">Cứu người.</span>
+            </h1>
+
+            <div class="max-w-2xl mx-auto relative group mt-10">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-red-400 rounded-[30px] blur opacity-30 group-hover:opacity-60 transition duration-1000">
+                </div>
+                <div class="relative">
+                    <input type="text" x-model="searchQuery" @input="filterResults" :placeholder="typewriterText"
+                        class="w-full glass bg-white/70 py-5 px-14 text-lg text-slate-700 placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-400/50 shadow-xl transition-all font-medium">
+                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+
+                    <button x-show="searchQuery.length > 0" @click="clearSearch()"
+                        class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div x-show="searchQuery.length > 0" x-transition.opacity x-transition:enter.duration.300ms
+                    x-transition:leave.duration.200ms x-cloak
+                    class="absolute top-full left-0 w-full mt-4 glass bg-white/95 overflow-hidden z-40 shadow-2xl rounded-2xl border border-blue-100 max-h-80 overflow-y-auto hidden-scrollbar">
+                    <div class="py-2">
+                        <template x-for="item in filteredData" :key="item.id">
+                            <div @click="openModal(item)"
+                                class="px-6 py-4 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-0 flex justify-between items-center group transition-colors">
+                                <span class="font-semibold text-slate-700 group-hover:text-blue-700 transition-colors"
+                                    x-text="item.title"></span>
+                                <div
+                                    class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i class="fas fa-arrow-right text-sm"></i>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="filteredData.length === 0"
+                            class="p-6 text-slate-500 italic flex flex-col items-center justify-center gap-3">
+                            <i class="fas fa-search-minus text-3xl text-slate-300"></i>
+                            Không tìm thấy kết quả phù hợp. Hãy gọi 115!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 flex flex-wrap justify-center gap-3">
+                <span class="text-sm font-medium text-slate-500 w-full mb-2">Gợi ý tìm kiếm nhanh:</span>
+                <button @click="quickSearch('cpr')"
+                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🫀
+                    CPR</button>
+                <button @click="quickSearch('bỏng')"
+                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🔥
+                    Bỏng</button>
+                <button @click="quickSearch('đột quỵ')"
+                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🧠
+                    Đột quỵ</button>
+                <button @click="quickSearch('đuối nước')"
+                    class="glass bg-white/40 hover:bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 transition shadow-sm rounded-full">🌊
+                    Đuối nước</button>
+            </div>
+        </section>
+
+        <section id="bodymap" class="py-16 scroll-mt-24">
+            <div class="text-center mb-12">
+                <span
+                    class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-blue-200">Tra
+                    cứu trực quan</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Bản đồ cơ thể</h2>
+                <p class="text-slate-600 max-w-xl mx-auto">Chọn một vùng trên mô hình để xem các tình huống sơ cấp cứu
+                    thường gặp nhất ở vị trí đó.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto">
+                <!-- Body Map SVG Container -->
+                <div class="glass bg-white/30 p-8 flex justify-center items-center shadow-lg relative min-h-[400px]">
+                    <svg viewBox="0 0 200 500"
+                        class="w-48 sm:w-64 h-auto drop-shadow-xl z-10 transition-transform duration-300 hover:scale-105">
+                        <!-- Head -->
+                        <circle cx="100" cy="50" r="40" class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'đầu' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('đầu')" />
+                        <!-- Chest/Torso -->
+                        <path d="M70,100 L130,100 L140,250 L60,250 Z"
+                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'ngực' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('ngực')" />
+                        <!-- Left Arm -->
+                        <path d="M40,110 L65,110 L55,250 L30,250 Z"
+                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('tay')" />
+                        <!-- Right Arm -->
+                        <path d="M135,110 L160,110 L170,250 L145,250 Z"
+                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'tay' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('tay')" />
+                        <!-- Left Leg -->
+                        <path d="M65,260 L95,260 L90,480 L60,480 Z"
+                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('chân')" />
+                        <!-- Right Leg -->
+                        <path d="M105,260 L135,260 L140,480 L110,480 Z"
+                            class="body-part cursor-pointer hover:stroke-red-400 stroke-2"
+                            :class="activePart === 'chân' ? 'active stroke-red-500' : 'stroke-transparent'"
+                            @click="selectPart('chân')" />
+                    </svg>
+
+                    <!-- Helper Text overlay -->
+                    <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20"
+                        x-show="!activePart">
+                        <i class="fas fa-hand-pointer text-6xl text-slate-800 animate-pulse"></i>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div class="glass bg-white/60 p-6 md:p-8 shadow-lg flex flex-col h-full">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200/50 block">
+                        <div
+                            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                            <i class="fas fa-list-ul"></i>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight"
+                            x-text="activePart ? 'Sơ cứu vùng: ' + activePart.toUpperCase() : 'Chọn vùng tổn thương'">
+                        </h3>
+                    </div>
+
+                    <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                        <div x-show="!activePart"
+                            class="h-full flex flex-col items-center justify-center text-slate-500 opacity-70 space-y-4 py-10">
+                            <i class="fas fa-child text-5xl"></i>
+                            <p class="text-center text-sm">Vui lòng nhấp vào các phần trên mô hình cơ thể<br>để xem
+                                hướng dẫn tương ứng.</p>
+                        </div>
+
+                        <div x-show="activePart" class="space-y-3" x-transition.opacity>
+                            <template x-for="item in partLessons" :key="item.id">
+                                <button @click="openModal(item)"
+                                    class="w-full text-left p-4 rounded-xl bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border border-slate-100 flex items-center justify-between group">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="bg-red-50 w-10 h-10 rounded-full flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                            <i class="fas fa-briefcase-medical"></i>
+                                        </div>
+                                        <span
+                                            class="font-bold text-slate-700 group-hover:text-blue-600 transition-colors"
+                                            x-text="item.title"></span>
+                                    </div>
+                                    <i
+                                        class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition-colors"></i>
+                                </button>
+                            </template>
+                            <div x-show="partLessons.length === 0"
+                                class="p-4 text-center text-slate-500 italic bg-white/50 rounded-xl border border-dashed border-slate-300">
+                                Chưa có dữ liệu riêng cho vùng này.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="minigame" class="py-16 scroll-mt-24 mb-10">
+            <div class="text-center mb-12">
+                <span
+                    class="bg-red-100 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 shadow-sm border border-red-200"><i
+                        class="fas fa-gamepad mr-2"></i>Mini Game</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Sự thật hay Lầm tưởng?</h2>
+                <p class="text-slate-600 max-w-xl mx-auto">Kiểm tra kiến thức dân gian của bạn. Có những mẹo vặt thực
+                    chất lại gây hại nhiều hơn lợi!</p>
+            </div>
+
+            <div class="max-w-lg mx-auto">
+                <div class="flip-card drop-shadow-2xl" :class="isFlipped ? 'flipped' : ''" @click="isFlipped = true">
+                    <div class="flip-card-inner">
+                        <!-- FRONT OF CARD -->
+                        <div
+                            class="flip-card-front glass bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl border-2 border-blue-400/30 group">
+
+                            <div
+                                class="absolute top-4 right-4 text-blue-300 opacity-50 text-4xl group-hover:scale-110 transition-transform">
+                                <i class="far fa-question-circle"></i>
+                            </div>
+
+                            <span
+                                class="text-xs uppercase tracking-widest text-blue-200 font-bold mb-6 bg-blue-900/40 px-3 py-1 rounded-full">Câu
+                                hỏi #<span x-text="currentMythIndex + 1"></span></span>
+
+                            <p class="text-2xl md:text-3xl font-extrabold leading-snug px-4 group-hover:text-blue-50 transition-colors"
+                                x-text="currentMyth.question"></p>
+
+                            <div
+                                class="absolute bottom-6 flex items-center gap-2 text-sm font-medium bg-white/20 px-4 py-2 rounded-full backdrop-blur-md animate-pulse">
+                                <i class="fas fa-hand-pointer"></i> Chạm để lật bài
+                            </div>
+                        </div>
+
+                        <!-- BACK OF CARD -->
+                        <div class="flip-card-back glass bg-white shadow-xl border-t-8 border-t-indigo-500"
+                            :class="currentMyth.isFact ? 'border-t-green-500' : 'border-t-red-500'">
+
+                            <div class="flex-grow flex flex-col justify-center items-center px-4">
+                                <div :class="currentMyth.isFact ? 'text-green-500 bg-green-50' : 'text-red-500 bg-red-50'"
+                                    class="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner">
+                                    <i :class="currentMyth.isFact ? 'fas fa-check' : 'fas fa-times'"></i>
+                                </div>
+                                <h4 class="text-2xl font-black uppercase tracking-wider mb-2"
+                                    :class="currentMyth.isFact ? 'text-green-600' : 'text-red-600'"
+                                    x-text="currentMyth.isFact ? 'SỰ THẬT' : 'LẦM TƯỞNG'"></h4>
+                                <p class="text-slate-600 text-[15px] font-medium leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100"
+                                    x-text="currentMyth.explanation"></p>
+                            </div>
+
+                            <button @click.stop="nextMyth()"
+                                class="w-full mt-4 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                                Câu Tiếp Theo <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress dots -->
+                <div class="flex justify-center gap-2 mt-6">
+                    <template x-for="(myth, index) in mythData" :key="index">
+                        <div class="w-2 h-2 rounded-full transition-all duration-300"
+                            :class="currentMythIndex === index ? 'bg-blue-600 w-6' : 'bg-slate-300'"></div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer
+        class="mt-auto py-8 text-center text-slate-500 text-sm border-t border-slate-200/50 z-10 bg-white/20 backdrop-blur-sm">
+        <p class="font-medium">&copy; 2026 Nhóm Sinh viên FPT University.</p>
+        <p class="mt-1">Dữ liệu tham khảo mang tính chất giáo dục cộng đồng.</p>
+    </footer>
+
+    <!-- AI Floating Head -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end group">
+        <!-- Chat Bubble Tooltip -->
+        <div class="bg-white px-4 py-3 rounded-2xl rounded-br-sm shadow-xl border border-slate-100 mb-3 origin-bottom-right scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+            <p class="text-sm font-bold text-slate-800 whitespace-nowrap">Cần tôi giúp gì không? 👋</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">Bác sĩ Sơ - AI Assistant (Coming Soon)</p>
+        </div>
+
+        <!-- Avatar Button -->
+        <button
+            class="relative w-16 h-16 rounded-full bg-white shadow-2xl flex items-center justify-center hover:scale-105 transition-transform duration-300 border-[3px] border-white group-hover:border-blue-100 overflow-visible"
+            @click="alert('Xin chào! Tính năng AI Chatbot Bác sĩ Sơ đang được nhóm hoàn thiện và sẽ ra mắt trong phiên bản tới nhé!')">
+            <div class="absolute inset-0 rounded-full bg-blue-100 overflow-hidden">
+                <!-- Using an actual image or reliable URL for avatar -->
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Medic&backgroundColor=b6e3f4" alt="Bác sĩ Sơ"
+                    class="w-full h-full object-cover">
+            </div>
+            <!-- Online status indicator -->
+            <span
+                class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full z-10 animate-pulse"></span>
+        </button>
+    </div>
+
+    <!-- Detail Modal (Frosted Glass) -->
+    <div x-show="showModal" x-transition.opacity duration.300ms x-cloak
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="showModal = false"></div>
+
+        <!-- Modal Content -->
+        <div x-show="showModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 translate-y-8 scale-95"
+            class="relative glass bg-white/95 w-full max-w-3xl max-h-[90vh] flex flex-col rounded-3xl shadow-2xl border border-white">
+
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 md:p-8 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 text-red-500 rounded-2xl flex items-center justify-center text-xl shadow-sm border border-red-100">
+                        <i class="fas fa-kit-medical"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800" x-text="selectedItem?.title"></h2>
+                </div>
+                <button @click="showModal = false"
+                    class="w-10 h-10 bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-500 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-grow">
+                <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+                    <!-- NÊN LÀM -->
+                    <div
+                        class="bg-green-50/50 p-6 rounded-3xl border border-green-200 shadow-sm relative overflow-hidden h-full">
+                        <div
+                            class="absolute top-0 right-0 text-7xl text-green-100 opacity-50 -mt-2 -mr-2 pointer-events-none">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4 class="font-bold text-green-700 text-lg mb-5 flex items-center gap-2 relative z-10">
+                            <span class="bg-green-100 p-1.5 rounded-lg inline-flex"><i
+                                    class="fas fa-check w-4 h-4 flex items-center justify-center"></i></span>
+                            NÊN LÀM
+                        </h4>
+                        <ul class="text-slate-700 space-y-4 relative z-10">
+                            <template x-for="step in selectedItem?.dos" :key="step">
+                                <li class="flex gap-3 leading-relaxed items-start">
+                                    <span class="text-green-500 mt-1 shrink-0"><i class="fas fa-caret-right"></i></span>
+                                    <span x-text="step" class="font-medium"></span>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+
+                    <!-- KHÔNG NÊN -->
+                    <div
+                        class="bg-red-50/50 p-6 rounded-3xl border border-red-200 shadow-sm relative overflow-hidden h-full">
+                        <div
+                            class="absolute top-0 right-0 text-7xl text-red-100 opacity-50 -mt-2 -mr-2 pointer-events-none">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <h4 class="font-bold text-red-700 text-lg mb-5 flex items-center gap-2 relative z-10">
+                            <span class="bg-red-100 p-1.5 rounded-lg inline-flex"><i
+                                    class="fas fa-times w-4 h-4 flex items-center justify-center"></i></span>
+                            KHÔNG NÊN LÀM
+                        </h4>
+                        <ul class="text-slate-700 space-y-4 relative z-10">
+                            <template x-for="step in selectedItem?.donts" :key="step">
+                                <li class="flex gap-3 leading-relaxed items-start">
+                                    <span class="text-red-500 mt-1 shrink-0"><i class="fas fa-caret-right"></i></span>
+                                    <span x-text="step" class="font-medium"></span>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-amber-50 rounded-2xl p-5 border border-amber-200 flex items-start gap-4">
+                    <div class="text-amber-500 text-2xl mt-0.5 shrink-0"><i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-amber-800 mb-1">Cảnh báo quan trọng</h5>
+                        <p class="text-sm text-amber-900/80 leading-relaxed">Thông tin thao tác chỉ mang tính chất tham
+                            khảo sơ cứu khẩn cấp ban đầu. Luôn ưu tiên quan sát tình trạng sinh tồn và gọi ngay
+                            <b>115</b> khi nạn nhân có dấu hiệu nguy kịch.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Prevent modal bleed at bottom -->
+            <div class="h-4 shrink-0 rounded-b-3xl"></div>
+        </div>
+    </div>
+
+    <!-- Additional Custom CSS for Scrollbars -->
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+
+        .hidden-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hidden-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    </style>
+
+    <script>
+        function appData() {
+            return {
+                searchQuery: '',
+                typewriterText: '',
+                phrases: ['Cách xử lý bỏng nước sôi?', 'Bị sặc sữa, nghẹt thở...', 'Gọi 115 khi nào?', 'Bị rắn cắn phải làm sao?', 'Sơ cứu người đuối nước', 'CPR ép tim ngoài lồng ngực'],
+                phraseIndex: 0,
+                charIndex: 0,
+                showModal: false,
+                selectedItem: null,
+                activePart: null,
+                isFlipped: false,
+                currentMythIndex: 0,
+
+                // 1. Data Y Tế Chuẩn
+                firstAidData: [
+                    {
+                        id: 1,
+                        title: 'Bỏng ngoài da (Lửa, Nước sôi)',
+                        tags: ['đầu', 'tay', 'chân', 'ngực'],
+                        keywords: 'bỏng bong phỏng nong nóng nước sôi lửa cháy',
+                        dos: ['Lập tức xả nước mát (không phải nước đá) vòi sen nhẹ vào vết bỏng 15-20 phút.', 'Tháo bỏ đồ trang sức, đồng hồ quanh vùng bỏng trước khi nó sưng lên.', 'Che phủ vết bỏng bằng gạc vô trùng, không xơ dính.', 'Uống nhiều nước để bù dịch.'],
+                        donts: ['KHÔNG chườm đá lạnh trực tiếp (gây bỏng lạnh làm hoại tử sâu thêm).', 'KHÔNG bôi kem đánh răng, nước mắm, mỡ trăn (tăng nguy cơ nhiễm trùng máu).', 'KHÔNG chọc vỡ các bóng nước.', 'KHÔNG lột quần áo đang dính chặt vào vết bỏng.']
+                    },
+                    {
+                        id: 2,
+                        title: 'Ép tim - Thổi ngạt (CPR) / Ngưng tim',
+                        tags: ['ngực'],
+                        keywords: 'cpr tim ngung tim tat tho đứng tim ép tim hô hấp nhân tạo',
+                        dos: ['Kiểm tra an toàn hiện trường, gọi lớn hỏi nạn nhân, gọi ngay 115.', 'Đặt nạn nhân nằm ngửa trên nền cứng.', 'Ép tim giữa ngực: Mạnh, nhanh, sâu 5cm. Nhịp độ 100-120 lần/phút.', 'Thực hiện liên tục không nghỉ cho đến khi có y tế hoặc nạn nhân tỉnh.'],
+                        donts: ['KHÔNG dừng tay quá 10 giây trừ khi để gắn máy sốc điện (AED).', 'KHÔNG ép cùi chỏ, dùng lực từ toàn bộ nửa thân trên dồn xuống.', 'KHÔNG ép vào phần bụng dưới xương ức.']
+                    },
+                    {
+                        id: 3,
+                        title: 'Hóc dị vật / Nghẹt thở (Heimlich)',
+                        tags: ['ngực', 'đầu'],
+                        keywords: 'hoc hóc nghẹn sac sặc dị vật xuong cá',
+                        dos: ['Nếu nạn nhân còn ho được: Khuyến khích tiếp tục ho mạnh.', 'Nếu hết ho/khó thở/tím tái: Áp dụng Heimlich. Đứng sau lưng, ôm eo.', 'Nắm tay thành nắm đấm, đặt vùng thượng vị (trên rốn).', 'Giật mạnh theo hướng từ trước ra sau, dưới lên trên 5 lần liên tiếp.'],
+                        donts: ['KHÔNG dùng tay móc mù họng nạn nhân nếu không nhìn thấy rõ dị vật (sẽ đẩy nó vào sâu hơn).', 'KHÔNG vỗ lưng khi nạn nhân đang đứng thẳng đứng.', 'KHÔNG cho uống nước khi đang dị vật chắn ngang thanh quản.']
+                    },
+                    {
+                        id: 4,
+                        title: 'Rắn rết cắn',
+                        tags: ['tay', 'chân'],
+                        keywords: 'rắn ran can rết độc nọc độc',
+                        dos: ['Trấn an nạn nhân tuyệt đối giữ yên tĩnh, nằm bất động.', 'Giữ vùng cắn KHÔNG cao hơn tim để làm chậm độc lan.', 'Rửa sạch vết thương bằng xà phòng/nước sạch nhẹ nhàng.', 'Dùng nẹp gỗ cố định toàn bộ chi bị cắn và đưa đi viện ngay.'],
+                        donts: ['KHÔNG rạch, khía vết cắn.', 'KHÔNG hút nọc độc bằng miệng.', 'KHÔNG buộc garo cắt đứt hoàn toàn tuần hoàn (gây hoại tử chi).', 'KHÔNG đắp các loại lá cây dân gian.']
+                    },
+                    {
+                        id: 5,
+                        title: 'Gãy xương / Trật khớp',
+                        tags: ['tay', 'chân'],
+                        keywords: 'gãy xuong gay xuong trật khớp bong gân',
+                        dos: ['Giữ nguyên hiện trạng tư thế của vùng chấn thương.', 'Xử lý cầm máu trước nếu là gãy xương hở.', 'Dùng nẹp cứng và dây vải cố định khớp trên và khớp dưới ngay tại chỗ.', 'Chườm lạnh bọc ngoài vải quanh vị trí đau.'],
+                        donts: ['KHÔNG tự ý nắn kéo bẻ xương khớp chệch về vị tríũ.', 'KHÔNG xoa bóp dầu nóng, mật gấu (làm sưng nề và chảy máu trong nhiều hơn).', 'KHÔNG cố di chuyển nếu nghi ngờ gãy cột sống chậu hông.']
+                    },
+                    {
+                        id: 6,
+                        title: 'Chảy máu nhiều / Vết thương hở',
+                        tags: ['đầu', 'tay', 'chân', 'ngực'],
+                        keywords: 'chảy máu dao cắt đứt tay cầm máu',
+                        dos: ['Dùng gạc sạch (hoặc mảnh vải sạch nhất có thể) độn dày ép chặt lực mạnh lên vết thương.', 'Nâng cao chi bị máu so với mức tim (nếu không kèm gãy xương).', 'Băng ép chặt lại và gọi cấp cứu.', 'Giữ ấm cho nạn nhân phòng sốc mất máu.'],
+                        donts: ['KHÔNG gỡ bỏ lớp băng gạc đầu tiên ra xem ngay cả khi thấm máu mồ hôi. Hãy chồng lớp mới lên.', 'Hạn chế dùng garo trừ khi chi bị đứt lìa và phun tia máu không cầm được bằng ép trực tiếp.']
+                    },
+                    {
+                        id: 7,
+                        title: 'Chảy máu cam (Mũi)',
+                        tags: ['đầu'],
+                        keywords: 'máu cam mũi chảy máu mũi mui',
+                        dos: ['Cho nạn nhân ngồi thẳng lưng.', 'Hơi CÚI ĐẦU về phía trước.', 'Dùng ngón cái và ngón trỏ bóp chặt cả hai bên cánh mũi (phần mềm) trong 10-15 phút.', 'Khuyên nằm nghỉ ngơi sau khi ngưng chảy.'],
+                        donts: ['KHÔNG ngửa đầu ra sau (máu sẽ chảy ngược xuống thực quản/khí quản).', 'KHÔNG khịt mũi, xì mũi trong vòng vài giờ sau đó.', 'KHÔNG nhét cục bông/giấy sâu tịt vào mũi.']
+                    },
+                    {
+                        id: 8,
+                        title: 'Đột quỵ (Tai biến mạch máu não)',
+                        tags: ['đầu', 'ngực'],
+                        keywords: 'đột quỵ dot quy tai bién tai biến méo miệng FAST',
+                        dos: ['Nhận biết nguyên tắc F.A.S.T (Face-Mặt méo, Arm-Tay yếu, Speech-Nói đớ, Time-Thời gian).', 'GỌI NGAY 115 lập tức. Ghi nhớ giờ phát hiện.', 'Đặt nằm đầu nghiêng sang một bên nếu nôn mửa.', 'Nới lỏng quần áo cho thoáng khí.'],
+                        donts: ['KHÔNG nặn chích lể máu 10 đầu ngón tay ngón chân.', 'KHÔNG vắt chanh vào miệng.', 'KHÔNG cho uống thuốc hạ huyết áp, uống trà, nước lọc hay bất cứ gì (nguy cơ sặc viêm phổi).', 'KHÔNG cạo gió.']
+                    },
+                    {
+                        id: 9,
+                        title: 'Đuối nước',
+                        tags: ['ngực', 'đầu'],
+                        keywords: 'đuối nước duoi nuoc chìm ngộp sặc nước',
+                        dos: ['Đưa nạn nhân lên bờ ngay lập tức an toàn nhất.', 'Kiểm tra ngay nhịp thở. Nếu ngừng thở/ngừng tim -> Làm CPR (ép tim, thổi ngạt) ngay trên nền phẳng cứng.', 'Làm khô cơ thể, giữ ấm sau khi tỉnh.', 'Luôn đưa đi bệnh viện kiểm tra dù đã tỉnh lại vì rủi ro đuối nước thứ cấp do viêm phổi.'],
+                        donts: ['KHÔNG dốc ngược vác nạn nhân chạy quanh sân (chỉ làm nước từ dạ dày trào lên đường thở).', 'KHÔNG ép bụng để thử đẩy nước ra ngoài.', 'KHÔNG bỏ cuộc CPR sớm.']
+                    }
+                ],
+
+                // 2. Myth Data (Mini-game)
+                mythData: [
+                    { question: "Bôi kem đánh răng lên vết bỏng lửa sẽ làm mát và nhanh khỏi?", isFact: false, explanation: "Kem đánh răng chứa kiềm và hương liệu (bạc hà) gây xót, dễ làm vết bỏng nhiễm trùng trầm trọng và gây khó khăn cho bác sĩ khi xử lý vết thương. Phải xả dưới nước sạch 15-20 phút!" },
+                    { question: "Khi bị chảy máu cam, nên ngửa đầu ra sau để máu không chảy ra ngoài?", isFact: false, explanation: "Rất nguy hiểm! Ngửa đầu ra sau làm máu chảy ngược xuống dạ dày gây nôn ói, hoặc lọt vào đường thở gây sặc phổi. Hãy cúi nhẹ về trước và bóp chặt cánh mũi." },
+                    { question: "Ép tim ngoài lồng ngực (CPR) liên tục là ưu tiên số 1 khi gặp người ngưng thở, ngưng tim?", isFact: true, explanation: "Sự thật! Nhấn ngực liên tục (100-120 lần/phút) đẩy máu oxy đi nuôi não là cách cứu sống quan trọng nhất, kể cả khi bạn không dám thổi ngạt." },
+                    { question: "Người bị co giật/động kinh: Nên nhét thìa hoặc vắt chanh vào miệng để họ không cắn vào lưỡi?", isFact: false, explanation: "Rất nguy hiểm! Nhét đồ cứng có thể làm gãy lợi/răng, rớt vào thanh quản gây nghẹt thở. Hãy dọn vật nguy hiểm xung quanh, kê vật mềm dưới đầu và đợi cơn giật qua đi. Việc tự cắn đứt lưỡi là rất hiếm." },
+                    { question: "Cạo gió, chích lể 10 đầu ngón tay là cách tốt nhất sơ cứu tại chỗ người đột quỵ?", isFact: false, explanation: "Tuyệt đối không! Đột quỵ do tắc hoặc vỡ mạch máu não sâu bên trong não. Chích đầu ngón tay không có tác dụng, làm đau đớn tăng huyết áp lên, và làm MẤT đi 'thời gian vàng' (3-4 giờ) để đưa đi cấp cứu." },
+                    { question: "Nếu không may bị dao găm sâu vào bụng/chân, không được phép rút vật đó ra?", isFact: true, explanation: "Sự thật! Vật cắm sâu đang làm nhiệm vụ như một 'chiếc nút chai' bịt mạch máu lớn bị rách. Rút ra đột ngột sẽ làm đứt miệng vết thương và máu phun ồ ạt dẫn đến sốc tử vong. Cần cố định tĩnh vật đó lại chèn băng xung quanh và cấp cứu." },
+                    { question: "Người bị hóc dị vật sặc sụa: Phải vỗ mạnh vào lưng họ khi họ đang đứng thẳng?", isFact: false, explanation: "Sai lầm. Nếu họ đứng thẳng, trọng lực kèm cái vỗ lưng có thể đẩy dị vật tuột sâu hẳn bít kín đường thở. Phải để họ CÚI NGƯỜI VỀ TRƯỚC mặt song song với đất rồi mới vỗ lưng." },
+                    { question: "Vác ngược người bị đuối nước lên vai chạy vòng quanh để xóc nước ra khỏi phổi?", isFact: false, explanation: "Sai. Nước trong phổi rất ít và khó ra theo cách đó. Dốc ngược thân làm trào ngược thức ăn và nước từ dạ dày lên bịt tắc đường thở. Ưu tiên số một khi đưa lên bờ là phải Ép tim hô hấp nhân tạo ngay." },
+                ],
+
+                filteredData: [],
+                partLessons: [],
+
+                init() {
+                    this.typewriter();
+                    this.currentMyth = this.mythData[0];
+                    // Pre-fill body map data for initially active part (null by default)
+                    this.partLessons = [];
+                },
+
+                typewriter() {
+                    let currentPhrase = this.phrases[this.phraseIndex];
+                    if (this.charIndex < currentPhrase.length) {
+                        this.typewriterText += currentPhrase.charAt(this.charIndex);
+                        this.charIndex++;
+                        setTimeout(() => this.typewriter(), 80); // Tốc độ gõ
+                    } else {
+                        setTimeout(() => {
+                            this.typewriterText = '';
+                            this.charIndex = 0;
+                            this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
+                            this.typewriter();
+                        }, 2500); // Tạm dừng khi gõ xong
+                    }
+                },
+
+                filterResults() {
+                    if (this.searchQuery === '') {
+                        this.filteredData = [];
+                        return;
+                    }
+                    const q = this.searchQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents for search
+
+                    this.filteredData = this.firstAidData.filter(item => {
+                        const titleNormal = item.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        const keywordNormal = item.keywords.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                        return titleNormal.includes(q) || keywordNormal.includes(q);
+                    });
+                },
+
+                quickSearch(term) {
+                    this.searchQuery = term;
+                    this.filterResults();
+                    // Cuộn thẳng lên khung search nhẹ nhàng
+                    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+                },
+
+                clearSearch() {
+                    this.searchQuery = '';
+                    this.filteredData = [];
+                },
+
+                selectPart(part) {
+                    if (this.activePart === part) {
+                        // Toggle off
+                        this.activePart = null;
+                        this.partLessons = [];
+                    } else {
+                        // Toggle on
+                        this.activePart = part;
+                        this.partLessons = this.firstAidData.filter(item => item.tags.includes(part));
+                    }
+                },
+
+                openModal(item) {
+                    this.selectedItem = item;
+                    this.showModal = true;
+                    // Prevent body scroll
+                    document.body.style.overflow = 'hidden';
+                },
+
+                get currentMyth() {
+                    return this.mythData[this.currentMythIndex];
+                },
+
+                nextMyth() {
+                    this.isFlipped = false;
+                    setTimeout(() => {
+                        this.currentMythIndex = (this.currentMythIndex + 1) % this.mythData.length;
+                    }, 400); // Đợi thẻ gập lại hoàn toàn rồi đổi nội dung
+                }
+            };
+
+            // Watch for modal close to restore scroll
+            document.addEventListener('alpine:init', () => {
+                Alpine.effect(() => {
+                    const ctx = Alpine.$data(document.querySelector('[x-data]'));
+                    if (!ctx.showModal) {
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
+
+
